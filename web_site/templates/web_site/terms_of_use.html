@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load  static i18n %}
+{% block title %}
+{% trans 'Помощь' %}
+{% endblock %}
+
+{% block content %}
+<!-- page title -->
+<section class="section section--first section--bg" data-bg="{% static 'img/section/section.jpg' %}">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="section__wrap">
+                    <!-- section title -->
+                    <h2 class="section__title">{% trans 'Terms Of Use' %}</h2>
+                    <!-- end section title -->
+
+                    <!-- breadcrumb -->
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb__item"><a href="{% url 'home' %}">{% trans 'Домой' %}</a></li>
+                        <li class="breadcrumb__item breadcrumb__item--active">{% trans 'Помощь' %}</li>
+                    </ul>
+                    <!-- end breadcrumb -->
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- end page title -->
+
+	<!-- faq -->
+<section class="section">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 col-md-6">
+                <div class="faq">
+                    <h3 class="faq__title">Terms of Use</h3>
+                    <p class="faq__text">Website Terms of Use manage the use of a website by visitors. These are distinct from terms and conditions of business which are concerned with the e-commerce aspects of selling goods or services online, rather than the way in which a website is used. Any businesses with an online presence must include certain details in order to abide by the Electronic Commerce Regulations. Website terms and conditions are the best place to include such information.</p>
+                    <p class="faq__text">Ensuring that your users understand the limitations of how they can use any website content, including text, images, videos and music, helps to secure your intellectual property.</p>
+                    <p class="faq__text">If you don't have a clue on how to make terms of use for your website, we can help you out. Just fill in the spaces below and we will send you an email with your very own terms of use for your website.</p>
+                    <p class="faq__text">The accuracy of the generated document on this website is not legally binding. Use at your own risk.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+	<!-- end faq -->
+{% endblock %}

@@ -1,0 +1,56 @@
+{% load static web_site_tags recaptcha3 social_share cache %}
+{% block title %}
+{{ movie.movie_id }}
+
+{% endblock %}
+
+{% block content %}
+<body class="background">
+    <div class="col-12 col-xl-12" id="playerContainer">
+        <!-- player -->
+        <div id="kinobd"></div>
+        <!-- end player -->
+    </div>
+    
+    <script>
+        fetch('https://kinopoiskapiunofficial.tech/api/v2.1/films/search-by-keyword?keyword={{ movie.title }}&page=1', {
+            method: 'GET',
+            headers: {
+                'X-API-KEY': 'a5c03f62-fa2c-4a18-a42c-54a548e55a4c',
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(res => res.json())
+        .then(json => {
+            // Проверяем, есть ли результаты поиска
+            if (json && json.films && json.films.length > 0) {
+                // Получаем filmId первого попавшегося фильма
+                const firstFilmId = json.films[0].filmId;
+                console.log("First filmId:", firstFilmId);
+                // Устанавливаем значение firstFilmId в атрибут data-kinopoisk элемента с id "kinobd"
+                document.getElementById('kinobd').setAttribute('data-kinopoisk', firstFilmId);
+                // После установки firstFilmId подключаем скрипт player_.js
+                const scriptElement = document.createElement('script');
+                scriptElement.src = 'https://kinobd.net/js/player_.js';
+                document.getElementById('playerContainer').appendChild(scriptElement);
+            } else {
+                console.log("Фильм не найден.");
+            }
+        })
+        .catch(err => console.log("Ошибка при выполнении запроса:", err));
+    </script>
+<style>
+    .player {
+        width: 100%;
+        height: 100%;
+    }
+
+    .background {
+
+        background-color: rgb(56, 55, 55);
+    }
+</style>
+</body>
+
+
+{% endblock %}

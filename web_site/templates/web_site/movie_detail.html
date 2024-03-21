@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static web_site_tags recaptcha3 social_share cache %}
+{% block title %}
+{{ movie.title }}
+{% endblock %}
+
+{% block content %}
+<!---->
+<section class="section details">
+    <!-- details background -->
+    <div class="details__bg" data-bg="{% static 'img/home/project.jpg' %}"></div>
+    <!-- end details background -->
+
+    <!-- details content -->
+    <div class="container">
+        <div class="row">
+            <!-- title -->
+            <div class="col-12">
+                <h1 class="details__title">{{ movie.title }}</h1>
+            </div>
+            <!-- end title -->
+
+            <!-- content -->
+            <div class="col-10">
+                <div class="card card--details card--series">
+                    <div class="row">
+                        <!-- card cover -->
+                        <div class="col-12 col-sm-4 col-md-4 col-lg-3 col-xl-3">
+                            <div class="card__cover">
+                                <img src="{{ movie.poster }}" alt="">
+                            </div>
+                        </div>
+                        <!-- end card cover -->
+
+                        <!-- card content -->
+                        <div class="col-12 col-sm-8 col-md-8 col-lg-9 col-xl-9">
+                            <div class="card__content">
+                                <div class="card__wrap">
+                                    <span class="card__rate"><i class="icon ion-ios-star"></i>{{ movie.rating }}</span>
+                                    <ul class="card__list">
+                                        <li>{{ movie.category }}</li>
+                                    </ul>
+                                </div>
+
+                                <ul class="card__meta">
+                                    {% if movie.tagline %}
+                                        <li><span>Слоган:</span>{{ movie.tagline }}</li>
+                                    {% endif %}
+                                    <li><span>Жанр:</span>
+                                        {% for item in movie.genres.all %}
+                                        <a href="{{ item.get_absolute_url }}">{{ item.name|title }}</a>
+                                        {% endfor %}
+                                    </li>
+                                    <li><span>Режиссер:</span>
+                                        {% for item in movie.directors.all %}
+                                        <a href="{% url 'director_detail' item.slug 1 %}">{{ item.name|title }}</a>
+                                        {% endfor %}
+                                    </li>
+                                    <li><span>Актёры:</span>
+                                        {% for item in movie.actors.all %}
+                                        <a href="{{ item.get_absolute_url  }}">{{ item.name|title }}</a>
+                                        {% endfor %}
+                                    </li>
+                                    <li><span>Год выпуска:</span> {{ movie.year }}</li>
+                                    <li><span>Страна:</span>{{ movie.country }}</li>
+                                    {% if movie.plot %}
+                                    <li><span>О фильме:</span>{{ movie.plot }}</li>
+                                    {% endif %}
+                                </ul>
+
+                                <div class="card__description card__description--details">
+                                    {{ movie.description|safe }}
+                                </div>
+                            </div>
+                        </div>
+                        <!-- end card content -->
+                    </div>
+                </div>
+            </div>
+            <!-- end content -->
+            
+            <div class="col-12 col-xl-12" id="playerContainer">
+                <!-- player -->
+                <div id="kinobd"></div>
+                <!-- end player -->
+            </div>
+            
+            <!--<script> ###вырезан на тесты
+                fetch('https://kinopoiskapiunofficial.tech/api/v2.1/films/search-by-keyword?keyword={{ movie.title }}&page=1', {
+                    method: 'GET',
+                    headers: {
+                        'X-API-KEY': 'a5c03f62-fa2c-4a18-a42c-54a548e55a4c',
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(res => res.json())
+                .then(json => {
+                    // Проверяем, есть ли результаты поиска
+                    if (json && json.films && json.films.length > 0) {
+                        // Получаем filmId первого попавшегося фильма
+                        const firstFilmId = json.films[0].filmId;
+                        console.log("First filmId:", firstFilmId);
+                        // Устанавливаем значение firstFilmId в атрибут data-kinopoisk элемента с id "kinobd"
+                        document.getElementById('kinobd').setAttribute('data-kinopoisk', firstFilmId);
+                        // После установки firstFilmId подключаем скрипт player_.js
+                        const scriptElement = document.createElement('script');
+                        scriptElement.src = 'https://kinobd.net/js/player_.js';
+                        document.getElementById('playerContainer').appendChild(scriptElement);
+                    } else {
+                        console.log("Фильм не найден.");
+                    }
+                })
+                .catch(err => console.log("Ошибка при выполнении запроса:", err));
+            </script>-->  
+        </div>
+    </div>
+    <!-- end details content -->
+</section>
+<!-- end details -->
+{% endblock %}
