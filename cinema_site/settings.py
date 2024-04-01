@@ -4,8 +4,8 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'cg#p$g+j9tax!#a3cup@1$8obt2_+&k3q+pmu)5%asj6yjpkag')
-ALLOWED_HOSTS = ['89.179.71.54']
-#ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['your IP'] #public
+#ALLOWED_HOSTS = ['127.0.0.1'] #local
 DEBUG = False
 SECURE_HSTS_SECONDS = 31536000  # Установка HSTS на год
 SECURE_SSL_REDIRECT = False  # Перенаправление на HTTPS
