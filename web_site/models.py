@@ -107,7 +107,7 @@ class Movie(models.Model):
     directors = models.ManyToManyField(Director, related_name="film_director")
     actors = models.ManyToManyField(Actor, related_name="film_actor")
     genres = models.ManyToManyField(Genre)
-    category = models.ForeignKey(Category, default='film', on_delete=models.SET_NULL, null=True)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
     slug = models.SlugField(default='none', max_length=130, unique=True)
 
     def __str__(self):

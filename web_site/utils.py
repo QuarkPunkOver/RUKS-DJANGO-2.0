@@ -2,7 +2,7 @@ import requests
 from .models import Movie
 
 def fetch_movie_data(movie_id):
-    url = f"http://127.0.0.1:8000/{movie_id}/"
+    url = f"http://89.179.71.54:8000/{movie_id}/"
     response = requests.get(url)
     if response.status_code == 200:
         data = response.json()

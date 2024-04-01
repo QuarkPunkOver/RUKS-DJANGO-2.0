@@ -29,93 +29,75 @@ import json
 from imdb import Cinemagoer
 from django.http import JsonResponse
 
+def all_movies(request):
+    movies = Movie.objects.all()
+    movies_data = [{'title': movie.title, 'rating': movie.rating, 'plot': movie.plot, 'poster': movie.poster, 'year': movie.year, 'country': movie.country} for movie in movies]
+    return JsonResponse(movies_data, safe=False)
+
+def delete_movie(request, movie_id):
+    try:
+        movie = Movie.objects.get(movie_id=movie_id)
+        movie.delete()
+        return JsonResponse({'message': 'Movie deleted successfully'}, status=200)
+    except Movie.DoesNotExist:
+        return JsonResponse({'error': 'Movie not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+class ActorCounter:
+    def __init__(self):
+        self.count = 0
+
+    def increment(self):
+        self.count += 1
+
+    def is_limit_reached(self):
+        return self.count >= 10
+    
+actor_counter = ActorCounter()
+
 class MovieInfoView(APIView):
     @staticmethod
     def get_person_info(person_id):
-        ia = Cinemagoer()
-        person = ia.get_person(person_id)
-        name = person.get('name')
-        photo = person.get('full-size headshot')
-        return name, photo
+        if actor_counter.is_limit_reached():
+            return None, None
+        else:
+            try:
+                ia = Cinemagoer()
+                person = ia.get_person(person_id)
+                name = person.get('name')
+                photo = person.get('full-size headshot')
+                if photo is None:
+                    # Заглушка для URL фотографии
+                    placeholder_photo_url = 'https://clipart-library.com/image_gallery/515127.jpg'
+                    return name, placeholder_photo_url
+                
+                actor_counter.increment()
+
+                return name, photo
+            except Exception as e:
+                print(f"An error occurred: {e}")
+                return None, None
 
     def get(self, request, movie_id):
+        try:
+            movie = Movie.objects.get(movie_id=movie_id)
+            serializer = MovieSerializer(movie)
+            return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+        except Movie.DoesNotExist:
+            pass
+
         if 'write_data' in request.path:
             serializer = MovieInfoSerializer(data={'movie_id': movie_id})
-            
             if serializer.is_valid():
                 movie_info = serializer.get_movie_info(movie_id)
-                movie_data = serializer.get_movie_info(movie_id)
-                
-                # Проверка наличия фильма в базе данных
-                existing_movie = Movie.objects.filter(movie_id=movie_data['movie_id']).first()
-                if existing_movie:
-                    return Response({'message': 'Фильм уже существует'}, status=status.HTTP_400_BAD_REQUEST)
-                
-                # Создание объекта модели фильма и сохранение его в базе данных
-                movie = Movie(
-                    movie_id=movie_data['movie_id'],
-                    title=movie_data['title'],
-                    rating=movie_data['rating'],
-                    plot=movie_data['plot'],
-                    poster=movie_data['poster'],
-                    year=movie_data['year'],
-                    country=movie_data['country'],
-                    # Добавьте обработку остальных полей...
-                )
-                movie.save()
-
-                # Обработка жанров
-                for genre in movie_data['genres']:
-                    movie_genre, created = Genre.objects.get_or_create(name=genre)
-                    movie.genres.add(movie_genre)
-
-                # Обработка режиссеров
-                for director_id in movie_data['directors']:
-                    director_name, director_photo = self.get_person_info(director_id)
-                    director, _ = Director.objects.get_or_create(name=director_name)
-                    if director_photo:
-                        director.image = director_photo
-                        director.save()
-                    movie.directors.add(director)
-                            
-                # Обработка актеров
-                for actor_id in movie_data['actors']:
-                    actor_name, actor_photo = self.get_person_info(actor_id)
-                    actor, _ = Actor.objects.get_or_create(name=actor_name)
-                    if actor_photo:
-                        actor.image = actor_photo
-                        actor.save()
-                    movie.actors.add(actor)
-
-                return Response(movie_data, status=status.HTTP_200_OK)
+                serializer.add_movie_to_db(movie_info)
+                return JsonResponse(movie_info, status=status.HTTP_200_OK)
             else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
-            serializer = MovieInfoSerializer(data={'movie_id': movie_id})
-            
-            if serializer.is_valid():
-                movie_info = serializer.get_movie_info(movie_id)
-                movie_data = serializer.get_movie_info(movie_id)
-                
-                # Создание объекта модели фильма и сохранение его в базе данных
-                movie = Movie(
-                    movie_id=movie_data['movie_id'],
-                    title=movie_data['title'],
-                    rating=movie_data['rating'],
-                    plot=movie_data['plot'],
-                    poster=movie_data['poster'],
-                    year=movie_data['year'],
-                    country=movie_data['country'],
-                    # Добавьте обработку остальных полей...
-                )
-                
-                # Обработка жанров
-                for genre in movie_data['genres']:
-                    movie_genre, created = Genre.objects.get_or_create(name=genre)
-
-                return Response(movie_data, status=status.HTTP_200_OK)
-            else:
-                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            raise Http404("Movie does not exist")  # Если фильм не найден в базе данных, возвращаем 404 ошибку
+        
 def get_client_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
@@ -124,6 +106,13 @@ def get_client_ip(request):
         ip = request.META.get('REMOTE_ADDR')
     return ip
 
+def movie_api_view(request, movie_id):
+    serializer = MovieInfoSerializer(data={'movie_id': movie_id})
+    if serializer.is_valid():
+        movie_data = serializer.get_movie_info(movie_id)
+        return JsonResponse(movie_data)
+    else:
+        return JsonResponse(serializer.errors, status=400)
 
 class MoviesFilter:
 

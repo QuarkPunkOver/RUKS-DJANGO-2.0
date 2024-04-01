@@ -22,12 +22,16 @@ from django.conf.urls import handler404
 from django.contrib.auth import views as auth_views
 
 from web_site.forms import ResetPasswordForm, SetNewPasswordForm
-
+from web_site.views import MovieInfoView, all_movies, delete_movie
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('i18n/', include('django.conf.urls.i18n')),
     path('api-auth/', include('rest_framework.urls')),
     path('RestAPI/', include('RestAPI.urls')),
+    path('API/', all_movies, name='all_movies'), #All movies(for RUKSwatch)
+    path('API/<movie_id>', MovieInfoView.as_view(), name='movie-info'),
+    path('API/<movie_id>/write_data', MovieInfoView.as_view(), name='write_data'),
+    path('API/<movie_id>/delete', delete_movie, name='delete_movie'),
 
 ]
 

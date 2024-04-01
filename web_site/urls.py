@@ -5,9 +5,6 @@ from .views import *
 
 urlpatterns = [
     path('', MoviesView.as_view(), name='home'),
-    path('API/<movie_id>/', MovieInfoView.as_view(), name='movie-info'),
-    path('API/<movie_id>/write_data/', MovieInfoView.as_view(), name='process_api_data'),
-
     path('catalog/<int:page>/', CatalogView.as_view(), name='catalog'),
     path('filter/', FilterMoviesView.as_view(), name='filter'),
     path('search/', Search.as_view(), name='search'),
@@ -18,8 +15,7 @@ urlpatterns = [
     path('login/', UserLoginView.as_view(), name='login'),
     path('logout/', logout_user, name='logout'),
     path('catalog/<slug:slug>/<int:page>/', CatalogView.as_view(), name='genre_catalog'),
-    path('<slug:slug>/', SingleMovieView.as_view(), name='movie_detail'),\
-    path('<slug:slug>/VideoPlayer/', SinglePlayerView.as_view(), name='videoplayerblank'),
+    path('<slug:slug>/', SingleMovieView.as_view(), name='movie_detail'),
     path("actor/<str:slug>/<int:page>/", ActorDetailView.as_view(), name="actor_detail"),
     path("producer/<str:slug>/<int:page>/", DirectorDetailView.as_view(), name="director_detail"),
 ]
