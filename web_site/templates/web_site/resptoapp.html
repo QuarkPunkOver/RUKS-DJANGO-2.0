@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kinopoisk Player</title>
+</head>
+<body>
+    <script>
+        const currentUrl = window.location.href;
+        const urlParts = currentUrl.split('/');
+
+        // Получаем последний элемент массива, который содержит movie_id
+        const movieId = urlParts[urlParts.length - 1];
+
+        console.log(movieId); // Выводим значение movieId в консоль
+
+fetch(`http://89.179.71.54:8000/API/${movieId}`)
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Ошибка при выполнении запроса к вашему API: ' + response.statusText);
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Здесь вы можете использовать полученные данные о фильме (например, movie.title)
+        const movieTitle = data.title;
+        console.log("Название фильма:", movieTitle);
+
+        // Теперь можно использовать movieTitle для отправки запроса к kinopoisk API
+        // Например, использовать его в URL запроса
+        return fetch(`https://kinopoiskapiunofficial.tech/api/v2.1/films/search-by-keyword?keyword=${movieTitle}&page=1`, {
+            method: 'GET',
+            headers: {
+                'X-API-KEY': 'a5c03f62-fa2c-4a18-a42c-54a548e55a4c',
+                'Content-Type': 'application/json',
+            },
+        });
+    })
+    .then(res => res.json())
+    .then(json => {
+        // Далее обработка ответа от kinopoisk API
+        if (json && json.films && json.films.length > 0) {
+            // Получаем filmId первого попавшегося фильма
+            const firstFilmId = json.films[0].filmId;
+            console.log("First filmId:", firstFilmId);
+            // Вставляем значение firstFilmId в атрибут href кнопки
+            const watchFilmLink = document.getElementById('watchFilmLink');
+            const href = 'https://fundaveover.pythonanywhere.com/film_api/movies/' + firstFilmId
+            window.location.href = href;
+            // Делаем блок с плеером видимым
+        } else {
+            console.log("Фильм не найден.");
+        }
+    })
+    .catch(err => console.error(err));
+
+    </script>
+</body>
+</html>

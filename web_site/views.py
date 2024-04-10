@@ -31,7 +31,7 @@ from django.http import JsonResponse
 
 def all_movies(request):
     movies = Movie.objects.all()
-    movies_data = [{'title': movie.title, 'rating': movie.rating, 'plot': movie.plot, 'poster': movie.poster, 'year': movie.year, 'country': movie.country} for movie in movies]
+    movies_data = [{'movie_id': movie.movie_id, 'title': movie.title, 'rating': movie.rating, 'plot': movie.plot, 'poster': movie.poster, 'year': movie.year, 'country': movie.country} for movie in movies]
     return JsonResponse(movies_data, safe=False)
 
 def delete_movie(request, movie_id):
@@ -113,6 +113,9 @@ def movie_api_view(request, movie_id):
         return JsonResponse(movie_data)
     else:
         return JsonResponse(serializer.errors, status=400)
+
+def resp_to_app(request, movie_id):
+    return render(request, 'web_site/resptoapp.html', {'movie_id': movie_id})
 
 class MoviesFilter:
 

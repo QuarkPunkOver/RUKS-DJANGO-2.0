@@ -18,6 +18,8 @@ urlpatterns = [
     path('<slug:slug>/', SingleMovieView.as_view(), name='movie_detail'),
     path("actor/<str:slug>/<int:page>/", ActorDetailView.as_view(), name="actor_detail"),
     path("producer/<str:slug>/<int:page>/", DirectorDetailView.as_view(), name="director_detail"),
+    path('resp/<movie_id>', resp_to_app, name='resptoapp'),
+    
 ]
 '''
 urlpatterns = [
